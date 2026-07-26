@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MI LIDI 6171</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --orange:#ff7a1a;
+      --orange-2:#ffad32;
+      --orange-soft:#fff3e9;
+      --orange-soft-2:#fff8f3;
+      --ink:#303238;
+      --muted:#767c87;
+      --line:#e7e8eb;
+      --bg:#f7f8fa;
+      --white:#fff;
+      --green:#28a96b;
+      --red:#e85b55;
+      --shadow:0 8px 24px rgba(35,38,45,.07);
+      --radius:18px;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--ink);
+      font-family:"Plus Jakarta Sans",sans-serif;
+    }
+
+    button,input,select,textarea{font:inherit}
+
+    .loading{
+      position:fixed;
+      inset:0;
+      z-index:999;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#fff;
+      transition:.45s ease;
+    }
+    .loading.hide{opacity:0;visibility:hidden}
+    .loader-card{
+      width:min(310px,calc(100vw - 40px));
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+    }
+    .loader-icon{font-size:62px;line-height:1;margin-bottom:12px}
+    .loader-title{font-size:27px;font-weight:800;color:var(--orange)}
+    .loader-sub{
+      width:100%;
+      min-height:34px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:12px;
+      line-height:1.5;
+      color:var(--muted);
+      margin:7px 0 16px;
+    }
+    .loader-track{
+      width:235px;
+      max-width:100%;
+      height:8px;
+      margin:0 auto;
+      background:#eee;
+      border-radius:999px;
+      overflow:hidden;
+    }
+    .loader-track span{
+      display:block;
+      width:0%;
+      height:100%;
+      border-radius:999px;
+      background:linear-gradient(90deg,var(--orange),var(--orange-2));
+      transition:width .3s ease;
+    }
+    .loader-percent{
+      margin-top:9px;
+      color:var(--muted);
+      font-size:10px;
+      font-weight:700;
+    }
+
+    .app{
+      min-height:100vh;
+      display:grid;
+      grid-template-columns:230px 1fr;
+    }
+
+    .sidebar{
+      height:100vh;
+      position:sticky;
+      top:0;
+      background:#fff;
+      border-right:1px solid var(--line);
+      padding:18px 14px;
+      z-index:70;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:11px;
+      padding:6px 7px 18px;
+      border-bottom:1px solid var(--line);
+    }
+    .brand-mark{
+      width:46px;
+      height:46px;
+      border-radius:14px;
+      background:var(--orange-soft);
+      display:grid;
+      place-items:center;
+      font-size:24px;
+    }
+    .brand h1{
+      margin:0;
+      color:var(--orange);
+      font-size:18px;
+      font-weight:800;
+    }
+    .brand small{
+      display:block;
+      margin-top:3px;
+      color:var(--muted);
+      font-size:9px;
+      line-height:1.45;
+    }
+    .brand-lines span{display:block}
+
+    .nav-label{
+      margin:20px 11px 8px;
+      color:#aaa;
+      font-size:10px;
+      font-weight:700;
+      letter-spacing:.08em;
+    }
+
+    .nav-item{
+      width:100%;
+      border:0;
+      background:transparent;
+      padding:12px 13px;
+      border-radius:10px;
+      text-align:left;
+      cursor:pointer;
+      margin-bottom:5px;
+      color:#515660;
+      font-size:12px;
+      transition:.18s;
+    }
+    .nav-item:hover{background:#f6f7f8}
+    .nav-item.active{
+      background:linear-gradient(90deg,#ffb43a,#ffc959);
+      color:#292b30;
+      font-weight:700;
+    }
+
+    .sidebar-note{
+      margin-top:24px;
+      padding:13px;
+      border:1px solid #ffe0c8;
+      border-radius:13px;
+      background:var(--orange-soft-2);
+      color:#805334;
+      font-size:10px;
+      line-height:1.55;
+    }
+
+    .main{
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+      min-height:100vh;
+    }
+
+    .topbar{
+      height:68px;
+      position:sticky;
+      top:0;
+      z-index:50;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 23px;
+      background:#fff;
+      border-bottom:1px solid var(--line);
+    }
+    .top-left{
+      display:flex;
+      align-items:center;
+      gap:11px;
+    }
+    .mobile-menu{
+      display:none;
+      border:0;
+      background:transparent;
+      font-size:22px;
+      cursor:pointer;
+    }
+    .breadcrumb{font-size:11px;color:var(--muted)}
+
+    .pj-logo-wrap{
+      width:48px;
+      height:48px;
+      border:1px solid var(--line);
+      border-radius:13px;
+      background:#fff;
+      display:grid;
+      place-items:center;
+      overflow:hidden;
+    }
+    .pj-logo-wrap img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+    }
+
+    .content{
+      flex:1;
+      padding:23px;
+    }
+
+    .page{display:none}
+    .page.active{display:block}
+
+    .page-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:15px;
+      margin-bottom:18px;
+    }
+    .page-head h2{margin:0 0 5px;font-size:22px}
+    .page-head p{margin:0;color:var(--muted);font-size:12px}
+
+    .btn{
+      border:0;
+      border-radius:10px;
+      padding:10px 13px;
+      cursor:pointer;
+      font-size:11px;
+      font-weight:700;
+    }
+    .btn-orange{background:var(--orange);color:#fff}
+    .btn-light{background:#fff;border:1px solid var(--line);color:var(--ink)}
+
+    .hero{
+      display:grid;
+      grid-template-columns:1.6fr .8fr;
+      gap:17px;
+      margin-bottom:17px;
+    }
+    .hero-main,.hero-side{
+      padding:21px;
+      border:1px solid #ffd7b8;
+      border-radius:var(--radius);
+      background:#fff1e6;
+      box-shadow:var(--shadow);
+    }
+    .hero-main{
+      display:grid;
+      grid-template-columns:1fr 190px;
+      align-items:center;
+    }
+    .hero-main h3{margin:0 0 6px;font-size:17px}
+    .hero-main p,.hero-side p{margin:0;color:var(--muted);font-size:11px}
+    .big{
+      margin:18px 0 4px;
+      color:var(--orange);
+      font-size:42px;
+      font-weight:800;
+    }
+    .hero-visual{
+      height:150px;
+      border-radius:18px;
+      display:grid;
+      place-items:center;
+      overflow:hidden;
+      background:linear-gradient(135deg,#fff8f1,#ffe2cc);
+    }
+    .hero-visual svg{width:100%;height:100%;display:block}
+    .hero-side{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+    }
+    .hero-side .icon{
+      width:112px;
+      height:82px;
+      display:grid;
+      place-items:center;
+      margin-bottom:2px;
+    }
+    .hero-side .icon svg{width:100%;height:100%;display:block}
+    .hero-side h4{margin:8px 0 7px}
+    .hero-side button{margin-top:13px}
+
+    .metrics{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:15px;
+      margin-bottom:17px;
+    }
+    .metric{
+      padding:17px;
+      border:1px solid var(--line);
+      border-radius:15px;
+      background:#fff;
+      box-shadow:var(--shadow);
+    }
+    .metric-label{font-size:10px;color:var(--muted)}
+    .metric-value{margin:7px 0 4px;font-size:27px;font-weight:800}
+    .metric-note{font-size:9px;color:var(--muted)}
+
+    .tabs{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin:17px 0;
+    }
+    .tab{
+      border:1px solid var(--line);
+      border-radius:10px;
+      padding:9px 12px;
+      background:#fff;
+      font-size:10px;
+      font-weight:700;
+      cursor:pointer;
+    }
+    .tab.active{
+      border-color:var(--orange);
+      background:var(--orange);
+      color:#fff;
+    }
+
+    .card{
+      min-width:0;
+      padding:18px;
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      background:#fff;
+      box-shadow:var(--shadow);
+    }
+    .card-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:14px;
+    }
+    .card-title{margin:0;font-size:13px;font-weight:800}
+
+    .matrix-wrap{
+      max-height:62vh;
+      overflow:auto;
+      border-radius:12px;
+      scrollbar-gutter:stable;
+    }
+    .matrix-table{
+      width:100%;
+      min-width:900px;
+      border-collapse:separate;
+      border-spacing:0;
+      font-size:10px;
+    }
+    .matrix-table th,.matrix-table td{
+      padding:10px 9px;
+      border-right:1px solid var(--line);
+      border-bottom:1px solid var(--line);
+      text-align:center;
+      vertical-align:middle;
+    }
+    .matrix-table thead th{
+      position:sticky;
+      top:0;
+      z-index:3;
+      background:#fff8f3;
+      color:#65432d;
+      font-size:9px;
+    }
+    .matrix-table tr:first-child th{border-top:1px solid var(--line)}
+    .matrix-table th:first-child,.matrix-table td:first-child{
+      position:sticky;
+      left:0;
+      z-index:2;
+      text-align:left;
+      min-width:190px;
+      border-left:1px solid var(--line);
+      background:#fff;
+      font-weight:700;
+    }
+    .matrix-table thead th:first-child{
+      z-index:4;
+      background:#fff3e9;
+    }
+    .matrix-cell{
+      display:grid;
+      gap:3px;
+      min-width:92px;
+    }
+    .matrix-counts{
+      font-size:9px;
+      color:var(--muted);
+      white-space:nowrap;
+    }
+    .matrix-pct{
+      color:var(--green);
+      font-size:11px;
+      font-weight:800;
+    }
+    .matrix-empty{color:#bbb}
+
+    .info{
+      margin-bottom:13px;
+      padding:11px 13px;
+      border:1px solid #ffe0c8;
+      border-radius:11px;
+      background:#fff7f1;
+      color:#805334;
+      font-size:10px;
+      line-height:1.5;
+    }
+
+    .filters{
+      display:grid;
+      grid-template-columns:1.4fr 1fr 1fr 1fr auto;
+      gap:9px;
+      margin-bottom:13px;
+    }
+    .control{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:9px;
+      background:#fff;
+      padding:9px 10px;
+      color:#50545c;
+      font-size:10px;
+      outline:none;
+    }
+    .control:focus{
+      border-color:#ffbb87;
+      box-shadow:0 0 0 3px #fff1e7;
+    }
+
+    .table-wrap{
+      max-height:67vh;
+      overflow:auto;
+      border-radius:11px;
+      scrollbar-gutter:stable;
+    }
+    table.data{
+      width:100%;
+      min-width:1420px;
+      border-collapse:collapse;
+      font-size:10px;
+    }
+    table.data th{
+      position:sticky;
+      top:0;
+      z-index:6;
+      padding:10px 9px;
+      border-top:1px solid var(--line);
+      border-bottom:1px solid var(--line);
+      background:#fafafa;
+      color:#727781;
+      text-align:left;
+      font-size:9px;
+      box-shadow:0 1px 0 var(--line);
+    }
+    table.data th.sortable{
+      cursor:pointer;
+      user-select:none;
+      white-space:nowrap;
+    }
+    table.data th.sortable:hover{background:#fff3e9;color:#8a4f25}
+    .sort-indicator{
+      display:inline-block;
+      min-width:12px;
+      margin-left:4px;
+      color:var(--orange);
+      font-size:8px;
+    }
+    table.data td{
+      padding:10px 9px;
+      border-bottom:1px solid var(--line);
+      vertical-align:middle;
+    }
+    table.data tbody tr:hover{background:#fffaf6}
+    table.data tr.completed{
+      background:#f1f2f3;
+      color:#999;
+      opacity:.74;
+    }
+    table.data tr.completed select,
+    table.data tr.completed textarea,
+    table.data tr.completed button{
+      filter:grayscale(1);
+      opacity:.75;
+    }
+    table.data tr.completed input[type="checkbox"]{opacity:1}
+
+    .status{
+      display:inline-flex;
+      padding:5px 8px;
+      border-radius:999px;
+      font-size:8px;
+      font-weight:700;
+    }
+    .status-belum{background:#fee8e7;color:#bc3f3b}
+    .status-selesai{background:#e4f6ec;color:#147748}
+
+    .fasih{
+      border:1px solid #ffc89e;
+      background:#fff;
+      color:var(--orange);
+    }
+
+    .inline-select{min-width:165px}
+    .inline-note{
+      width:180px;
+      min-height:36px;
+      resize:vertical;
+    }
+    .inline-done{
+      display:flex;
+      align-items:center;
+      gap:7px;
+      white-space:nowrap;
+    }
+    .date-done{white-space:nowrap;font-size:9px}
+
+    .empty-state{
+      padding:35px;
+      text-align:center;
+      color:var(--muted);
+    }
+
+    footer{
+      padding:18px;
+      text-align:center;
+      color:var(--muted);
+      font-size:10px;
+    }
+    footer a{
+      color:var(--orange);
+      font-weight:700;
+      text-decoration:none;
+    }
+
+    .toast{
+      position:fixed;
+      right:22px;
+      bottom:22px;
+      z-index:200;
+      padding:12px 15px;
+      border-radius:10px;
+      background:#303238;
+      color:#fff;
+      font-size:10px;
+      opacity:0;
+      transform:translateY(10px);
+      transition:.25s;
+      pointer-events:none;
+    }
+    .toast.show{opacity:1;transform:translateY(0)}
+
+    @media(max-width:1050px){
+      .hero{grid-template-columns:1fr}
+      .metrics{grid-template-columns:1fr 1fr}
+      .filters{grid-template-columns:1fr 1fr}
+    }
+    @media(max-width:780px){
+      .app{grid-template-columns:1fr}
+      .sidebar{
+        position:fixed;
+        left:-245px;
+        width:230px;
+        transition:.25s;
+      }
+      .sidebar.open{left:0}
+      .mobile-menu{display:block}
+      .topbar{padding:0 14px}
+      .content{padding:15px}
+    }
+    @media(max-width:560px){
+      .metrics,.filters{grid-template-columns:1fr}
+      .hero-main{grid-template-columns:1fr}
+      .hero-visual{display:none}
+    }
+  </style>
+</head>
+
+<body>
+<div class="loading" id="loading">
+  <div class="loader-card">
+    <div class="loader-icon">🍜</div>
+    <div class="loader-title">MI LIDI 6171</div>
+    <div class="loader-sub" id="loadingText">Menyiapkan aplikasi...</div>
+    <div class="loader-track"><span id="loadingProgress"></span></div>
+    <div class="loader-percent" id="loadingPercent">0%</div>
+  </div>
+</div>
+
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">🍜</div>
+      <div>
+        <h1>MI LIDI 6171</h1>
+        <small class="brand-lines">
+          <span>Monitoring Anomali -</span>
+          <span>Dashboard Interaktif</span>
+          <span>BPS Kota Pontianak</span>
+        </small>
+      </div>
+    </div>
+
+    <div class="nav-label">MENU UTAMA</div>
+    <button class="nav-item active" data-page="dashboard">🍜 Dashboard</button>
+    <button class="nav-item" data-page="keluarga">👨‍👩‍👧 Anomali Keluarga</button>
+    <button class="nav-item" data-page="usaha">🏢 Anomali Usaha</button>
+
+    <div class="sidebar-note">
+      Filter berdasarkan <strong>Status → PJ Kuda → PJ Anomali</strong>, buka FASIH, lakukan perbaikan, isi tindak lanjut, lalu centang selesai.
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="top-left">
+        <button class="mobile-menu" id="mobileMenu">☰</button>
+        <div class="breadcrumb">Surveys / SENSUS EKONOMI 2026 / <strong id="crumb">Dashboard</strong></div>
+      </div>
+
+      <div class="pj-logo-wrap" title="PJ Onta">
+        <img src="logo-pj-onta.jpg" alt="Logo PJ Onta"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <span style="display:none;font-size:22px">🐪</span>
+      </div>
+    </header>
+
+    <section class="content">
+
+      <div class="page active" id="dashboard">
+        <div class="page-head">
+          <div>
+            <h2>Dashboard</h2>
+            <p>Ringkasan progres penanganan seluruh anomali SE2026 Kota Pontianak.</p>
+          </div>
+          <button class="btn btn-light" onclick="loadData()">↻ Muat Ulang</button>
+        </div>
+
+        <div class="hero">
+          <div class="hero-main">
+            <div>
+              <h3>Anomali Selesai</h3>
+              <p>Persentase seluruh anomali yang telah ditindaklanjuti.</p>
+              <div class="big" id="heroPct">0,00%</div>
+              <p id="heroCount">0 dari 0 anomali telah selesai</p>
+            </div>
+            <div class="hero-visual"><svg viewBox="0 0 260 160" role="img" aria-label="Ilustrasi analisis dashboard">
+  <rect x="126" y="28" width="112" height="90" rx="8" fill="#fff" stroke="#777" stroke-width="2"/>
+  <rect x="135" y="40" width="48" height="7" rx="3.5" fill="#f0b783"/>
+  <circle cx="154" cy="76" r="22" fill="#ff8a2b"/>
+  <path d="M154 54a22 22 0 0 1 19 33l-19-11z" fill="#7f7f7f"/>
+  <path d="M154 76l19 11a22 22 0 0 1-31 8z" fill="#f4c53d"/>
+  <rect x="190" y="58" width="35" height="6" rx="3" fill="#ddd"/>
+  <rect x="190" y="70" width="26" height="6" rx="3" fill="#ddd"/>
+  <rect x="190" y="82" width="31" height="6" rx="3" fill="#ddd"/>
+  <circle cx="80" cy="62" r="16" fill="#ffd0ac"/>
+  <path d="M64 58c4-21 30-19 34-2-7-4-13-5-20-1z" fill="#f28a3d"/>
+  <path d="M68 80c13-8 30-5 38 7l10 20-31 23-25-20z" fill="#ffb16f"/>
+  <path d="M86 91l39-19 7 12-38 22z" fill="#ffd0ac"/>
+  <path d="M76 129l-5 22h15l8-29z" fill="#777"/>
+  <path d="M99 126l12 25h16l-16-35z" fill="#777"/>
+  <path d="M38 45l34 11-25 20 2-13-14-4z" fill="#ff9b4a" stroke="#d97a32"/>
+  <circle cx="226" cy="19" r="4" fill="#777"/>
+  <path d="M226 23v9" stroke="#777" stroke-width="2"/>
+</svg></div>
+          </div>
+
+          <div class="hero-side">
+            <div class="icon"><svg viewBox="0 0 150 105" role="img" aria-label="Ilustrasi pekerjaan anomali">
+  <path d="M15 67L130 28 93 82 67 64 48 85 51 59z" fill="#ff8a1f"/>
+  <path d="M51 59l79-31-63 36z" fill="#ffbd58"/>
+  <path d="M67 64l26 18-42-23z" fill="#d96b1c"/>
+  <circle cx="91" cy="34" r="9" fill="#ffd1ae"/>
+  <path d="M83 31c2-11 15-11 18-2-6-2-10-1-14 2z" fill="#5f5f5f"/>
+  <path d="M84 44c8-5 17-3 22 5l8 15-28 8-9-16z" fill="#fff" stroke="#666"/>
+  <path d="M102 49l17-13" stroke="#666" stroke-width="3" stroke-linecap="round"/>
+  <path d="M113 34l8 2-4 7z" fill="#ff8a1f"/>
+  <path d="M38 28c7-8 15-9 22-2" fill="none" stroke="#d9b28f" stroke-width="2" stroke-dasharray="4 4"/>
+  <circle cx="31" cy="31" r="3" fill="#d9b28f"/>
+</svg></div>
+            <h4>Siap Menangani?</h4>
+            <p>Buka daftar anomali, perbaiki di FASIH, lalu tandai selesai.</p>
+            <button class="btn btn-orange" onclick="switchPage('keluarga')">Mulai</button>
+          </div>
+        </div>
+
+        <div class="metrics">
+          <div class="metric">
+            <div class="metric-label">Total Anomali</div>
+            <div class="metric-value" id="mTotal">0</div>
+            <div class="metric-note">Data keluarga dan usaha</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Belum</div>
+            <div class="metric-value" style="color:var(--red)" id="mBelum">0</div>
+            <div class="metric-note">Belum dicentang selesai</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Selesai</div>
+            <div class="metric-value" style="color:var(--green)" id="mSelesai">0</div>
+            <div class="metric-note">Sudah ditindaklanjuti</div>
+          </div>
+        </div>
+
+        <div class="tabs">
+          <button class="tab active" data-recap="kecamatan">Sekota Pontianak</button>
+          <button class="tab" data-recap="pml">By PML</button>
+          <button class="tab" data-recap="pjKuda">By PJ Kuda</button>
+          <button class="tab" data-recap="pjAnomali">By PJ Anomali</button>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h3 class="card-title" id="matrixTitle">Rekap Sekota Pontianak per Kecamatan</h3>
+            <span style="font-size:9px;color:var(--muted)">Isi sel: Belum | Selesai | % selesai</span>
+          </div>
+          <div class="matrix-wrap">
+            <table class="matrix-table" id="matrixTable"></table>
+          </div>
+        </div>
+      </div>
+
+      <div class="page" id="keluarga">
+        <div class="page-head">
+          <div>
+            <h2>Anomali Keluarga</h2>
+            <p>Tindak lanjut langsung dari tabel tanpa membuka pop-up.</p>
+          </div>
+          <button class="btn btn-light" onclick="exportCSV('Keluarga')">Export CSV</button>
+        </div>
+
+        <div class="card">
+          <div class="info">
+            Filter tersedia berdasarkan <strong>Status → PJ Kuda → PJ Anomali</strong>. Klik judul kolom untuk mengurutkan A–Z; data selesai selalu ditempatkan paling bawah.
+          </div>
+
+          <div class="filters">
+            <input class="control" id="kelSearch" placeholder="Cari nama prelist / anomali / wilayah">
+            <select class="control" id="kelStatus">
+              <option value="">Semua Status</option>
+              <option value="Belum">Belum</option>
+              <option value="Selesai">Selesai</option>
+            </select>
+            <select class="control" id="kelKuda"><option value="">Semua PJ Kuda</option></select>
+            <select class="control" id="kelAnomali"><option value="">Semua PJ Anomali</option></select>
+            <button class="btn btn-orange" onclick="renderTable('Keluarga')">Cari</button>
+          </div>
+
+          <div class="table-wrap">
+            <table class="data">
+              <thead>
+                <tr>
+                  <th class="sortable" data-sort="namaObjek" onclick="sortTable('Keluarga','namaObjek')">Nama Prelist<span class="sort-indicator" data-indicator="Keluarga-namaObjek"></span></th>
+                  <th class="sortable" data-sort="namaSubsls" onclick="sortTable('Keluarga','namaSubsls')">Wilayah<span class="sort-indicator" data-indicator="Keluarga-namaSubsls"></span></th>
+                  <th class="sortable" data-sort="idAnomali" onclick="sortTable('Keluarga','idAnomali')">Anomali<span class="sort-indicator" data-indicator="Keluarga-idAnomali"></span></th>
+                  <th class="sortable" data-sort="ppl" onclick="sortTable('Keluarga','ppl')">PPL<span class="sort-indicator" data-indicator="Keluarga-ppl"></span></th>
+                  <th class="sortable" data-sort="pml" onclick="sortTable('Keluarga','pml')">PML<span class="sort-indicator" data-indicator="Keluarga-pml"></span></th>
+                  <th class="sortable" data-sort="pjKuda" onclick="sortTable('Keluarga','pjKuda')">PJ Kuda<span class="sort-indicator" data-indicator="Keluarga-pjKuda"></span></th>
+                  <th class="sortable" data-sort="pjAnomali" onclick="sortTable('Keluarga','pjAnomali')">PJ Anomali<span class="sort-indicator" data-indicator="Keluarga-pjAnomali"></span></th>
+                  <th class="sortable" data-sort="tanggalUpdate" onclick="sortTable('Keluarga','tanggalUpdate')">Tanggal Update<span class="sort-indicator" data-indicator="Keluarga-tanggalUpdate"></span></th>
+                  <th>FASIH</th>
+                  <th>Tindak Lanjut</th>
+                  <th>Catatan</th>
+                  <th class="sortable" data-sort="done" onclick="sortTable('Keluarga','done')">Selesai?<span class="sort-indicator" data-indicator="Keluarga-done"></span></th>
+                  <th class="sortable" data-sort="tanggalSelesai" onclick="sortTable('Keluarga','tanggalSelesai')">Tanggal Penyelesaian<span class="sort-indicator" data-indicator="Keluarga-tanggalSelesai"></span></th>
+                </tr>
+              </thead>
+              <tbody id="kelTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="page" id="usaha">
+        <div class="page-head">
+          <div>
+            <h2>Anomali Usaha</h2>
+            <p>Tindak lanjut langsung dari tabel tanpa membuka pop-up.</p>
+          </div>
+          <button class="btn btn-light" onclick="exportCSV('Usaha')">Export CSV</button>
+        </div>
+
+        <div class="card">
+          <div class="info">
+            Gunakan link FASIH, pilih hasil tindak lanjut, isi catatan bila diperlukan, lalu centang selesai.
+          </div>
+
+          <div class="filters">
+            <input class="control" id="usahaSearch" placeholder="Cari nama usaha / anomali / wilayah">
+            <select class="control" id="usahaStatus">
+              <option value="">Semua Status</option>
+              <option value="Belum">Belum</option>
+              <option value="Selesai">Selesai</option>
+            </select>
+            <select class="control" id="usahaKuda"><option value="">Semua PJ Kuda</option></select>
+            <select class="control" id="usahaAnomali"><option value="">Semua PJ Anomali</option></select>
+            <button class="btn btn-orange" onclick="renderTable('Usaha')">Cari</button>
+          </div>
+
+          <div class="table-wrap">
+            <table class="data">
+              <thead>
+                <tr>
+                  <th class="sortable" data-sort="namaObjek" onclick="sortTable('Usaha','namaObjek')">Nama Usaha/Perusahaan<span class="sort-indicator" data-indicator="Usaha-namaObjek"></span></th>
+                  <th class="sortable" data-sort="namaSubsls" onclick="sortTable('Usaha','namaSubsls')">Wilayah<span class="sort-indicator" data-indicator="Usaha-namaSubsls"></span></th>
+                  <th class="sortable" data-sort="idAnomali" onclick="sortTable('Usaha','idAnomali')">Anomali<span class="sort-indicator" data-indicator="Usaha-idAnomali"></span></th>
+                  <th class="sortable" data-sort="ppl" onclick="sortTable('Usaha','ppl')">PPL<span class="sort-indicator" data-indicator="Usaha-ppl"></span></th>
+                  <th class="sortable" data-sort="pml" onclick="sortTable('Usaha','pml')">PML<span class="sort-indicator" data-indicator="Usaha-pml"></span></th>
+                  <th class="sortable" data-sort="pjKuda" onclick="sortTable('Usaha','pjKuda')">PJ Kuda<span class="sort-indicator" data-indicator="Usaha-pjKuda"></span></th>
+                  <th class="sortable" data-sort="pjAnomali" onclick="sortTable('Usaha','pjAnomali')">PJ Anomali<span class="sort-indicator" data-indicator="Usaha-pjAnomali"></span></th>
+                  <th class="sortable" data-sort="tanggalUpdate" onclick="sortTable('Usaha','tanggalUpdate')">Tanggal Update<span class="sort-indicator" data-indicator="Usaha-tanggalUpdate"></span></th>
+                  <th>FASIH</th>
+                  <th>Tindak Lanjut</th>
+                  <th>Catatan</th>
+                  <th class="sortable" data-sort="done" onclick="sortTable('Usaha','done')">Selesai?<span class="sort-indicator" data-indicator="Usaha-done"></span></th>
+                  <th class="sortable" data-sort="tanggalSelesai" onclick="sortTable('Usaha','tanggalSelesai')">Tanggal Penyelesaian<span class="sort-indicator" data-indicator="Usaha-tanggalSelesai"></span></th>
+                </tr>
+              </thead>
+              <tbody id="usahaTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <footer>
+      MI LIDI 6171 by
+      <a href="https://www.instagram.com/yovie.wibowo/" target="_blank" rel="noopener noreferrer">yovie.wibowo</a>
+    </footer>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/*
+  GANTI dengan URL deployment Web App Apps Script.
+  Contoh:
+  const API_URL = 'https://script.google.com/macros/s/AKfycb.../exec';
+*/
+const API_URL = 'https://script.google.com/macros/s/AKfycbzOnprzvqk0_Qng3ts6u54nKnzT3y0wBqTAM4S0owtBO_UubrDkqXIuejNtuCNKysCXtw/exec';
+
+let records = [];
+let anomalyIds = [];
+let activeRecap = 'kecamatan';
+let saveTimers = {};
+let tableSort = {
+  Keluarga: {field:'namaObjek', direction:'asc'},
+  Usaha: {field:'namaObjek', direction:'asc'}
+};
+
+function setLoadingProgress(percent, text) {
+  const safePercent = Math.max(0, Math.min(100, Number(percent) || 0));
+  document.getElementById('loadingProgress').style.width = safePercent + '%';
+  document.getElementById('loadingPercent').textContent = Math.round(safePercent) + '%';
+  if (text) document.getElementById('loadingText').textContent = text;
+}
+
+function finishLoading() {
+  setLoadingProgress(100, 'Data siap ditampilkan.');
+  setTimeout(() => document.getElementById('loading').classList.add('hide'), 250);
+}
+
+function showToast(message) {
+  const el = document.getElementById('toast');
+  el.textContent = message;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
+function formatDate(value) {
+  if (!value) return '-';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return escapeHtml(value);
+  return new Intl.DateTimeFormat('id-ID', {
+    day:'2-digit', month:'2-digit', year:'numeric',
+    hour:'2-digit', minute:'2-digit'
+  }).format(date);
+}
+
+async function apiRequest(action, payload = {}) {
+  if (!API_URL || API_URL.includes('PASTE_URL')) {
+    throw new Error('API_URL belum diisi pada index.html.');
+  }
+
+  const response = await fetch(API_URL, {
+    method: 'POST',
+    redirect: 'follow',
+    headers: {'Content-Type':'text/plain;charset=utf-8'},
+    body: JSON.stringify({action, ...payload})
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+
+  const result = await response.json();
+  if (!result.ok) throw new Error(result.message || 'Permintaan gagal.');
+  return result;
+}
+
+async function loadData() {
+  document.getElementById('loading').classList.remove('hide');
+  setLoadingProgress(8, 'Menghubungkan ke spreadsheet...');
+
+  try {
+    setLoadingProgress(22, 'Mengambil data anomali...');
+    const result = await apiRequest('getData');
+
+    setLoadingProgress(72, 'Menyiapkan tabel dan rekap...');
+    records = result.records || [];
+    anomalyIds = result.anomalyIds || [];
+
+    refreshAll();
+    setLoadingProgress(96, 'Menyelesaikan tampilan...');
+    finishLoading();
+    showToast(`Berhasil memuat ${records.length} anomali.`);
+  } catch (error) {
+    console.error(error);
+    setLoadingProgress(35, 'API belum terhubung. Menyiapkan data demo...');
+    loadDemoData();
+    finishLoading();
+  }
+}
+
+function loadDemoData() {
+  records = [
+    {sheet:'Mikro Anomali Keluarga',row:2,jenis:'Keluarga',assignmentId:'617101-K014',idSubsls:'6171010005000200',kdkec:'01',kecamatan:'Pontianak Selatan',kelurahan:'Akcaya',namaSubsls:'RT 002 RW 003',namaObjek:'Keluarga Rahmawati',anomali:'Konsumsi rumah tangga tidak wajar',idAnomali:'Ano.Sosek.4',pml:'Rina',pjKuda:'Yovie',pjAnomali:'Andri',tindakLanjut:'',catatan:'',done:false,linkFasih:'#',tanggalUpdate:'2026-07-26T00:00:00+07:00',tanggalSelesai:''},
+    {sheet:'Mikro Anomali Keluarga',row:3,jenis:'Keluarga',assignmentId:'617102-K031',idSubsls:'6171020007000500',kdkec:'02',kecamatan:'Pontianak Kota',kelurahan:'Sungai Bangkong',namaSubsls:'RT 005 RW 001',namaObjek:'Keluarga Rani Puspita',anomali:'Jumlah anggota keluarga tidak sesuai',idAnomali:'Ano.Sosek.7',pml:'Rina',pjKuda:'Dedi',pjAnomali:'Rama',tindakLanjut:'Sesuai Kondisi Lapangan',catatan:'Sesuai hasil konfirmasi.',done:true,linkFasih:'#',tanggalUpdate:'2026-07-24T00:00:00+07:00',tanggalSelesai:'2026-07-25T09:14:00+07:00'},
+    {sheet:'Mikro Anomali Keluarga',row:4,jenis:'Keluarga',assignmentId:'617103-K009',idSubsls:'6171030008000300',kdkec:'03',kecamatan:'Pontianak Barat',kelurahan:'Sungai Beliung',namaSubsls:'RT 003 RW 001',namaObjek:'Keluarga Kamaliah',anomali:'Pengeluaran lebih besar dari pendapatan',idAnomali:'Ano.Sosek.5',pml:'Andri Kurniawan',pjKuda:'Yovie',pjAnomali:'Andri',tindakLanjut:'',catatan:'',done:false,linkFasih:'#',tanggalUpdate:'2026-07-26T00:00:00+07:00',tanggalSelesai:''},
+    {sheet:'Mikro Anomali Usaha',row:2,jenis:'Usaha',assignmentId:'617103-U001',idSubsls:'6171030008000300',kdkec:'03',kecamatan:'Pontianak Barat',kelurahan:'Sungai Beliung',namaSubsls:'RT 003 RW 001',namaObjek:'Toko Sinar Jaya',anomali:'Selisih pendapatan dan pengeluaran',idAnomali:'Ano.Sosek.5',pml:'Andri Kurniawan',pjKuda:'Yovie',pjAnomali:'Andri',tindakLanjut:'',catatan:'',done:false,linkFasih:'#',tanggalUpdate:'2026-07-26T00:00:00+07:00',tanggalSelesai:''},
+    {sheet:'Mikro Anomali Usaha',row:3,jenis:'Usaha',assignmentId:'617104-U022',idSubsls:'6171040012000400',kdkec:'04',kecamatan:'Pontianak Timur',kelurahan:'Saigon',namaSubsls:'RT 004 RW 002',namaObjek:'CV Borneo Makmur',anomali:'Input bahan baku tidak logis',idAnomali:'Ano.Sosek.6',pml:'Andri Kurniawan',pjKuda:'Dedi',pjAnomali:'Andri',tindakLanjut:'Perbaikan',catatan:'Nilai bahan baku telah diperbaiki.',done:true,linkFasih:'#',tanggalUpdate:'2026-07-25T00:00:00+07:00',tanggalSelesai:'2026-07-26T13:42:00+07:00'},
+    {sheet:'Mikro Anomali Usaha',row:4,jenis:'Usaha',assignmentId:'617105-U009',idSubsls:'6171050003000100',kdkec:'05',kecamatan:'Pontianak Utara',kelurahan:'Siantan Tengah',namaSubsls:'RT 001 RW 004',namaObjek:'Warung Kopi Tokaya',anomali:'Selisih nilai produksi',idAnomali:'Ano.Sosek.5',pml:'Rina',pjKuda:'Yovie',pjAnomali:'Rama',tindakLanjut:'Sesuai Kondisi Lapangan',catatan:'Sudah dikonfirmasi.',done:true,linkFasih:'#',tanggalUpdate:'2026-07-24T00:00:00+07:00',tanggalSelesai:'2026-07-25T15:05:00+07:00'}
+  ];
+  anomalyIds = [...new Set(records.map(r => r.idAnomali))].sort();
+  refreshAll();
+  showToast('Menampilkan data demo karena API belum terhubung.');
+}
+
+function uniqueSorted(field, jenis) {
+  return [...new Set(
+    records
+      .filter(r => !jenis || r.jenis === jenis)
+      .map(r => r[field])
+      .filter(Boolean)
+  )].sort((a,b) => String(a).localeCompare(String(b), 'id'));
+}
+
+function rebuildFilterOptions() {
+  const configs = [
+    ['kel','Keluarga'],
+    ['usaha','Usaha']
+  ];
+
+  configs.forEach(([prefix, jenis]) => {
+    [
+      ['Kuda','pjKuda','Semua PJ Kuda'],
+      ['Anomali','pjAnomali','Semua PJ Anomali']
+    ].forEach(([suffix, field, label]) => {
+      const el = document.getElementById(prefix + suffix);
+      const selected = el.value;
+      el.innerHTML = `<option value="">${label}</option>` +
+        uniqueSorted(field, jenis)
+          .map(value => `<option ${value === selected ? 'selected' : ''}>${escapeHtml(value)}</option>`)
+          .join('');
+    });
+  });
+}
+
+function getFilters(jenis) {
+  const prefix = jenis === 'Keluarga' ? 'kel' : 'usaha';
+  return {
+    q: document.getElementById(prefix + 'Search').value.trim().toLowerCase(),
+    status: document.getElementById(prefix + 'Status').value,
+    pjKuda: document.getElementById(prefix + 'Kuda').value,
+    pjAnomali: document.getElementById(prefix + 'Anomali').value
+  };
+}
+
+function renderTable(jenis) {
+  const f = getFilters(jenis);
+  const tbody = document.getElementById(jenis === 'Keluarga' ? 'kelTable' : 'usahaTable');
+  const sort = tableSort[jenis];
+
+  const rows = records
+    .filter(r =>
+      r.jenis === jenis &&
+      (!f.q || [
+        r.assignmentId, r.namaObjek, r.anomali, r.idAnomali,
+        r.namaSubsls, r.kelurahan, r.ppl, r.pml, r.pjKuda, r.pjAnomali
+      ].join(' ').toLowerCase().includes(f.q)) &&
+      (!f.status || (f.status === 'Selesai' ? r.done : !r.done)) &&
+      (!f.pjKuda || r.pjKuda === f.pjKuda) &&
+      (!f.pjAnomali || r.pjAnomali === f.pjAnomali)
+    )
+    .sort((a,b) => {
+      // Selesai selalu di bawah, apa pun kolom sorting yang dipilih.
+      if (a.done !== b.done) return a.done ? 1 : -1;
+
+      const direction = sort.direction === 'desc' ? -1 : 1;
+      const field = sort.field;
+      const av = a[field] ?? '';
+      const bv = b[field] ?? '';
+
+      if (field === 'tanggalUpdate' || field === 'tanggalSelesai') {
+        const at = av ? new Date(av).getTime() : 0;
+        const bt = bv ? new Date(bv).getTime() : 0;
+        return (at - bt) * direction;
+      }
+
+      if (field === 'done') return 0;
+
+      return String(av).localeCompare(String(bv), 'id', {
+        numeric:true,
+        sensitivity:'base'
+      }) * direction;
+    });
+
+  updateSortIndicators(jenis);
+
+  if (!rows.length) {
+    tbody.innerHTML = `<tr><td colspan="13"><div class="empty-state">Tidak ada data yang cocok dengan filter.</div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = rows.map(r => `
+    <tr class="${r.done ? 'completed' : ''}" data-key="${escapeHtml(recordKey(r))}">
+      <td><strong>${escapeHtml(r.namaObjek)}</strong></td>
+      <td>
+        <strong>${escapeHtml(r.namaSubsls)}</strong><br>
+        <span style="color:var(--muted)">${escapeHtml(r.kelurahan)}</span>
+      </td>
+      <td>
+        <strong>${escapeHtml(r.idAnomali)}</strong><br>
+        <span style="color:var(--muted)">${escapeHtml(r.anomali)}</span>
+      </td>
+      <td>${escapeHtml(r.ppl)}</td>
+      <td>${escapeHtml(r.pml)}</td>
+      <td>${escapeHtml(r.pjKuda)}</td>
+      <td>${escapeHtml(r.pjAnomali)}</td>
+      <td>${formatDate(r.tanggalUpdate)}</td>
+      <td>
+        <button class="btn fasih" onclick="openFasih('${escapeJs(recordKey(r))}')">Buka FASIH</button>
+      </td>
+      <td>
+        <select class="control inline-select"
+                onchange="changeField('${escapeJs(recordKey(r))}','tindakLanjut',this.value)"
+                ${r.done ? 'disabled' : ''}>
+          <option value="">Pilih...</option>
+          <option ${r.tindakLanjut === 'Perbaikan' ? 'selected' : ''}>Perbaikan</option>
+          <option ${r.tindakLanjut === 'Sesuai Kondisi Lapangan' ? 'selected' : ''}>Sesuai Kondisi Lapangan</option>
+        </select>
+      </td>
+      <td>
+        <textarea class="control inline-note"
+                  placeholder="Catatan opsional"
+                  oninput="queueFieldSave('${escapeJs(recordKey(r))}','catatan',this.value)"
+                  ${r.done ? 'disabled' : ''}>${escapeHtml(r.catatan)}</textarea>
+      </td>
+      <td>
+        <label class="inline-done">
+          <input type="checkbox"
+                 ${r.done ? 'checked' : ''}
+                 onchange="toggleDone('${escapeJs(recordKey(r))}',this.checked)">
+          <span class="status ${r.done ? 'status-selesai' : 'status-belum'}">
+            ${r.done ? 'Selesai' : 'Belum'}
+          </span>
+        </label>
+      </td>
+      <td class="date-done">${formatDate(r.tanggalSelesai)}</td>
+    </tr>
+  `).join('');
+}
+
+function sortTable(jenis, field) {
+  const current = tableSort[jenis];
+  if (current.field === field) {
+    current.direction = current.direction === 'asc' ? 'desc' : 'asc';
+  } else {
+    current.field = field;
+    current.direction = 'asc';
+  }
+  renderTable(jenis);
+}
+
+function updateSortIndicators(jenis) {
+  document.querySelectorAll(`[data-indicator^="${jenis}-"]`).forEach(el => {
+    el.textContent = '';
+  });
+  const sort = tableSort[jenis];
+  const indicator = document.querySelector(
+    `[data-indicator="${jenis}-${sort.field}"]`
+  );
+  if (indicator) indicator.textContent = sort.direction === 'asc' ? '▲' : '▼';
+}
+
+function recordKey(record) {
+  return `${record.sheet}|${record.row}`;
+}
+
+function escapeJs(value) {
+  return String(value).replaceAll('\\','\\\\').replaceAll("'", "\\'");
+}
+
+function findRecord(key) {
+  return records.find(r => recordKey(r) === key);
+}
+
+function openFasih(key) {
+  const record = findRecord(key);
+  if (!record) return;
+
+  if (!record.linkFasih || record.linkFasih === '#') {
+    showToast('Link FASIH belum tersedia pada data ini.');
+    return;
+  }
+
+  window.open(record.linkFasih, '_blank', 'noopener,noreferrer');
+}
+
+function queueFieldSave(key, field, value) {
+  const timerKey = `${key}|${field}`;
+  clearTimeout(saveTimers[timerKey]);
+  saveTimers[timerKey] = setTimeout(() => changeField(key, field, value), 700);
+}
+
+async function changeField(key, field, value) {
+  const record = findRecord(key);
+  if (!record) return;
+
+  const oldValue = record[field];
+  record[field] = value;
+
+  try {
+    await apiRequest('updateRecord', {
+      sheet: record.sheet,
+      row: record.row,
+      updates: {[field]: value}
+    });
+    showToast('Perubahan tersimpan.');
+  } catch (error) {
+    console.error(error);
+    if (!API_URL.includes('PASTE_URL')) {
+      record[field] = oldValue;
+      renderTable(record.jenis);
+    }
+    showToast(API_URL.includes('PASTE_URL') ? 'Tersimpan pada mode demo.' : error.message);
+  }
+}
+
+async function toggleDone(key, checked) {
+  const record = findRecord(key);
+  if (!record) return;
+
+  if (checked && !record.tindakLanjut) {
+    showToast('Pilih Perbaikan atau Sesuai Kondisi Lapangan terlebih dahulu.');
+    renderTable(record.jenis);
+    return;
+  }
+
+  const previous = {
+    done: record.done,
+    tanggalSelesai: record.tanggalSelesai
+  };
+
+  record.done = checked;
+  record.tanggalSelesai = checked ? new Date().toISOString() : '';
+
+  renderTable(record.jenis);
+  renderDashboard();
+
+  try {
+    const result = await apiRequest('updateRecord', {
+      sheet: record.sheet,
+      row: record.row,
+      updates: {done: checked}
+    });
+
+    if (result.record) {
+      Object.assign(record, result.record);
+    }
+    renderTable(record.jenis);
+    renderDashboard();
+    showToast(checked ? 'Anomali ditandai selesai.' : 'Status dikembalikan menjadi Belum.');
+  } catch (error) {
+    console.error(error);
+    if (!API_URL.includes('PASTE_URL')) {
+      record.done = previous.done;
+      record.tanggalSelesai = previous.tanggalSelesai;
+      renderTable(record.jenis);
+      renderDashboard();
+    }
+    showToast(API_URL.includes('PASTE_URL') ? 'Status berubah pada mode demo.' : error.message);
+  }
+}
+
+function renderDashboard() {
+  const total = records.length;
+  const done = records.filter(r => r.done).length;
+  const pct = total ? (done / total * 100) : 0;
+
+  document.getElementById('mTotal').textContent = total.toLocaleString('id-ID');
+  document.getElementById('mBelum').textContent = (total - done).toLocaleString('id-ID');
+  document.getElementById('mSelesai').textContent = done.toLocaleString('id-ID');
+  document.getElementById('heroPct').textContent =
+    pct.toLocaleString('id-ID', {minimumFractionDigits:2, maximumFractionDigits:2}) + '%';
+  document.getElementById('heroCount').textContent =
+    `${done.toLocaleString('id-ID')} dari ${total.toLocaleString('id-ID')} anomali telah selesai`;
+
+  renderMatrix();
+}
+
+function groupRows(field) {
+  const map = new Map();
+
+  records.forEach(record => {
+    const label = record[field] || '(Kosong)';
+    const sortCode = field === 'kecamatan'
+      ? String(record.kdkec || '999').padStart(3,'0')
+      : label.toUpperCase();
+
+    if (!map.has(label)) {
+      map.set(label, {label, sortCode, records:[]});
+    }
+    map.get(label).records.push(record);
+  });
+
+  return [...map.values()].sort((a,b) =>
+    a.sortCode.localeCompare(b.sortCode, 'id', {numeric:true})
+  );
+}
+
+function renderMatrix() {
+  const titleMap = {
+    kecamatan:'Rekap Sekota Pontianak per Kecamatan',
+    pml:'Rekap Anomali by PML',
+    pjKuda:'Rekap Anomali by PJ Kuda',
+    pjAnomali:'Rekap Anomali by PJ Anomali'
+  };
+
+  document.getElementById('matrixTitle').textContent = titleMap[activeRecap];
+
+  const rows = groupRows(activeRecap);
+  const ids = anomalyIds.length
+    ? anomalyIds
+    : [...new Set(records.map(r => r.idAnomali).filter(Boolean))].sort();
+
+  const header = `
+    <thead>
+      <tr>
+        <th>${activeRecap === 'kecamatan' ? 'Kecamatan' :
+             activeRecap === 'pml' ? 'PML' :
+             activeRecap === 'pjKuda' ? 'PJ Kuda' : 'PJ Anomali'}</th>
+        <th>Semua Anomali</th>
+        ${ids.map(id => `<th>${escapeHtml(id)}</th>`).join('')}
+      </tr>
+    </thead>`;
+
+  const body = rows.map(group => {
+    const totalCell = buildMatrixCell(group.records);
+
+    const anomalyCells = ids.map(id => {
+      const subset = group.records.filter(r => r.idAnomali === id);
+      return buildMatrixCell(subset);
+    }).join('');
+
+    return `
+      <tr>
+        <td>
+          ${activeRecap === 'kecamatan' && group.records[0]?.kdkec
+            ? `<span style="color:var(--muted);font-size:8px">${escapeHtml(group.records[0].kdkec)}</span><br>`
+            : ''}
+          ${escapeHtml(group.label)}
+        </td>
+        ${totalCell}
+        ${anomalyCells}
+      </tr>`;
+  }).join('');
+
+  document.getElementById('matrixTable').innerHTML =
+    header + `<tbody>${body || `<tr><td colspan="${ids.length + 2}">Belum ada data.</td></tr>`}</tbody>`;
+}
+
+function buildMatrixCell(items) {
+  if (!items.length) {
+    return `<td><span class="matrix-empty">-</span></td>`;
+  }
+
+  const selesai = items.filter(r => r.done).length;
+  const belum = items.length - selesai;
+  const pct = selesai / items.length * 100;
+
+  return `
+    <td>
+      <div class="matrix-cell">
+        <div class="matrix-pct">${pct.toLocaleString('id-ID', {maximumFractionDigits:1})}%</div>
+        <div class="matrix-counts">B ${belum} | S ${selesai}</div>
+      </div>
+    </td>`;
+}
+
+function refreshAll() {
+  anomalyIds = [...new Set(records.map(r => r.idAnomali).filter(Boolean))]
+    .sort((a,b) => a.localeCompare(b,'id',{numeric:true}));
+
+  rebuildFilterOptions();
+  renderTable('Keluarga');
+  renderTable('Usaha');
+  renderDashboard();
+}
+
+function switchPage(id) {
+  document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+
+  document.querySelectorAll('.nav-item').forEach(item =>
+    item.classList.toggle('active', item.dataset.page === id)
+  );
+
+  document.getElementById('crumb').textContent = {
+    dashboard:'Dashboard',
+    keluarga:'Anomali Keluarga',
+    usaha:'Anomali Usaha'
+  }[id];
+
+  document.getElementById('sidebar').classList.remove('open');
+}
+
+function exportCSV(jenis) {
+  const rows = records.filter(r => r.jenis === jenis);
+  const headers = [
+    'Jenis','Assignment ID','ID SubSLS','Kecamatan','Kelurahan','Nama SubSLS',
+    'Nama Objek','Anomali','ID Anomali','PML','PJ Kuda','PJ Anomali',
+    'Tanggal Update','Tindak Lanjut','Catatan','Done','Tanggal Penyelesaian'
+  ];
+
+  const values = rows.map(r => [
+    r.jenis,r.assignmentId,r.idSubsls,r.kecamatan,r.kelurahan,r.namaSubsls,
+    r.namaObjek,r.anomali,r.idAnomali,r.pml,r.pjKuda,r.pjAnomali,
+    r.tanggalUpdate,r.tindakLanjut,r.catatan,r.done,r.tanggalSelesai
+  ]);
+
+  const csv = [headers, ...values]
+    .map(row => row.map(v => `"${String(v ?? '').replaceAll('"','""')}"`).join(','))
+    .join('\n');
+
+  const blob = new Blob(['\ufeff' + csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `MI_LIDI_6171_${jenis}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+document.querySelectorAll('.nav-item').forEach(button => {
+  button.addEventListener('click', () => switchPage(button.dataset.page));
+});
+
+document.querySelectorAll('.tab').forEach(button => {
+  button.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(item => item.classList.remove('active'));
+    button.classList.add('active');
+    activeRecap = button.dataset.recap;
+    renderMatrix();
+  });
+});
+
+document.getElementById('mobileMenu').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.toggle('open');
+});
+
+[
+  ['kelSearch','input','Keluarga'],
+  ['kelStatus','change','Keluarga'],
+  ['kelKuda','change','Keluarga'],
+  ['kelAnomali','change','Keluarga'],
+  ['usahaSearch','input','Usaha'],
+  ['usahaStatus','change','Usaha'],
+  ['usahaKuda','change','Usaha'],
+  ['usahaAnomali','change','Usaha']
+].forEach(([id,eventName,jenis]) => {
+  document.getElementById(id).addEventListener(eventName, () => renderTable(jenis));
+});
+
+window.addEventListener('load', () => {
+  setLoadingProgress(3, 'Menyiapkan aplikasi...');
+  loadData();
+});
+</script>
+</body>
+</html>
