@@ -49,15 +49,38 @@
     }
     .loading.hide{opacity:0;visibility:hidden}
     .loader-card{
-      width:min(310px,calc(100vw - 40px));
+      width:min(520px,calc(100vw - 36px));
       display:flex;
       flex-direction:column;
       align-items:center;
       justify-content:center;
       text-align:center;
     }
-    .loader-icon{font-size:62px;line-height:1;margin-bottom:12px}
-    .loader-title{font-size:27px;font-weight:800;color:var(--orange)}
+    .loading-collab{
+      width:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:20px;
+      margin-bottom:20px;
+    }
+    .loading-logo{
+      width:180px;
+      height:86px;
+      object-fit:contain;
+      background:#fff;
+      border-radius:16px;
+    }
+    .loading-logo.pj{
+      width:150px;
+      height:86px;
+    }
+    .loading-x{
+      color:var(--orange);
+      font-size:24px;
+      font-weight:800;
+    }
+    .loader-title{font-size:29px;font-weight:800;color:var(--orange)}
     .loader-sub{
       width:100%;
       min-height:34px;
@@ -289,9 +312,15 @@
       display:grid;
       place-items:center;
       overflow:hidden;
-      background:linear-gradient(135deg,#fff8f1,#ffe2cc);
+      background:#fff;
+      border:1px solid #f1d7c2;
     }
-    .hero-visual svg{width:100%;height:100%;display:block}
+    .hero-visual img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      display:block;
+    }
     .hero-side{
       display:flex;
       flex-direction:column;
@@ -300,13 +329,22 @@
       text-align:center;
     }
     .hero-side .icon{
-      width:112px;
-      height:82px;
+      width:125px;
+      height:92px;
       display:grid;
       place-items:center;
       margin-bottom:2px;
+      overflow:hidden;
+      border-radius:14px;
+      background:#fff;
+      border:1px solid #f1d7c2;
     }
-    .hero-side .icon svg{width:100%;height:100%;display:block}
+    .hero-side .icon img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      display:block;
+    }
     .hero-side h4{margin:8px 0 7px}
     .hero-side button{margin-top:13px}
 
@@ -326,6 +364,43 @@
     .metric-label{font-size:10px;color:var(--muted)}
     .metric-value{margin:7px 0 4px;font-size:27px;font-weight:800}
     .metric-note{font-size:9px;color:var(--muted)}
+    .overview-cards{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:14px;
+      margin-bottom:18px;
+    }
+    .overview-card{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:15px;
+      border:1px solid var(--line);
+      border-radius:15px;
+      background:#fff;
+      box-shadow:var(--shadow);
+    }
+    .overview-icon{
+      width:42px;
+      height:42px;
+      flex:0 0 auto;
+      display:grid;
+      place-items:center;
+      border-radius:13px;
+      background:var(--orange-soft);
+      font-size:20px;
+    }
+    .overview-label{
+      color:var(--muted);
+      font-size:9px;
+      margin-bottom:4px;
+    }
+    .overview-value{
+      font-size:15px;
+      font-weight:800;
+      line-height:1.35;
+    }
+
 
     .tabs{
       display:flex;
@@ -582,6 +657,7 @@
     @media(max-width:1050px){
       .hero{grid-template-columns:1fr}
       .metrics{grid-template-columns:1fr 1fr}
+      .overview-cards{grid-template-columns:1fr 1fr}
       .filters{grid-template-columns:1fr 1fr}
     }
     @media(max-width:780px){
@@ -598,9 +674,12 @@
       .content{padding:15px}
     }
     @media(max-width:560px){
-      .metrics,.filters{grid-template-columns:1fr}
+      .metrics,.overview-cards,.filters{grid-template-columns:1fr}
       .hero-main{grid-template-columns:1fr}
-      .hero-visual{display:none}
+      .hero-visual{height:130px;margin-top:14px}
+      .loading-collab{gap:10px}
+      .loading-logo{width:130px;height:68px}
+      .loading-logo.pj{width:110px;height:68px}
     }
   </style>
 </head>
@@ -608,7 +687,11 @@
 <body>
 <div class="loading" id="loading">
   <div class="loader-card">
-    <div class="loader-icon">🍜</div>
+    <div class="loading-collab">
+      <img class="loading-logo" src="logo-bps-kota-pontianak.png" alt="Logo BPS Kota Pontianak">
+      <div class="loading-x">×</div>
+      <img class="loading-logo pj" src="logo-pj-onta.jpg" alt="Logo PJ Onta">
+    </div>
     <div class="loader-title">MI LIDI 6171</div>
     <div class="loader-sub" id="loadingText">Menyiapkan aplikasi...</div>
     <div class="loader-track"><span id="loadingProgress"></span></div>
@@ -673,40 +756,11 @@
               <div class="big" id="heroPct">0,00%</div>
               <p id="heroCount">0 dari 0 anomali telah selesai</p>
             </div>
-            <div class="hero-visual"><svg viewBox="0 0 260 160" role="img" aria-label="Ilustrasi analisis dashboard">
-  <rect x="126" y="28" width="112" height="90" rx="8" fill="#fff" stroke="#777" stroke-width="2"/>
-  <rect x="135" y="40" width="48" height="7" rx="3.5" fill="#f0b783"/>
-  <circle cx="154" cy="76" r="22" fill="#ff8a2b"/>
-  <path d="M154 54a22 22 0 0 1 19 33l-19-11z" fill="#7f7f7f"/>
-  <path d="M154 76l19 11a22 22 0 0 1-31 8z" fill="#f4c53d"/>
-  <rect x="190" y="58" width="35" height="6" rx="3" fill="#ddd"/>
-  <rect x="190" y="70" width="26" height="6" rx="3" fill="#ddd"/>
-  <rect x="190" y="82" width="31" height="6" rx="3" fill="#ddd"/>
-  <circle cx="80" cy="62" r="16" fill="#ffd0ac"/>
-  <path d="M64 58c4-21 30-19 34-2-7-4-13-5-20-1z" fill="#f28a3d"/>
-  <path d="M68 80c13-8 30-5 38 7l10 20-31 23-25-20z" fill="#ffb16f"/>
-  <path d="M86 91l39-19 7 12-38 22z" fill="#ffd0ac"/>
-  <path d="M76 129l-5 22h15l8-29z" fill="#777"/>
-  <path d="M99 126l12 25h16l-16-35z" fill="#777"/>
-  <path d="M38 45l34 11-25 20 2-13-14-4z" fill="#ff9b4a" stroke="#d97a32"/>
-  <circle cx="226" cy="19" r="4" fill="#777"/>
-  <path d="M226 23v9" stroke="#777" stroke-width="2"/>
-</svg></div>
+            <div class="hero-visual"><img src="kuda-santai.jpeg" alt="Ilustrasi kuda santai"></div>
           </div>
 
           <div class="hero-side">
-            <div class="icon"><svg viewBox="0 0 150 105" role="img" aria-label="Ilustrasi pekerjaan anomali">
-  <path d="M15 67L130 28 93 82 67 64 48 85 51 59z" fill="#ff8a1f"/>
-  <path d="M51 59l79-31-63 36z" fill="#ffbd58"/>
-  <path d="M67 64l26 18-42-23z" fill="#d96b1c"/>
-  <circle cx="91" cy="34" r="9" fill="#ffd1ae"/>
-  <path d="M83 31c2-11 15-11 18-2-6-2-10-1-14 2z" fill="#5f5f5f"/>
-  <path d="M84 44c8-5 17-3 22 5l8 15-28 8-9-16z" fill="#fff" stroke="#666"/>
-  <path d="M102 49l17-13" stroke="#666" stroke-width="3" stroke-linecap="round"/>
-  <path d="M113 34l8 2-4 7z" fill="#ff8a1f"/>
-  <path d="M38 28c7-8 15-9 22-2" fill="none" stroke="#d9b28f" stroke-width="2" stroke-dasharray="4 4"/>
-  <circle cx="31" cy="31" r="3" fill="#d9b28f"/>
-</svg></div>
+            <div class="icon"><img src="kuda-wortel.jpeg" alt="Ilustrasi kuda mengejar wortel"></div>
             <h4>Siap Menangani?</h4>
             <p>Buka daftar anomali, perbaiki di FASIH, lalu tandai selesai.</p>
             <button class="btn btn-orange" onclick="switchPage('keluarga')">Mulai</button>
@@ -728,6 +782,37 @@
             <div class="metric-label">Selesai</div>
             <div class="metric-value" style="color:var(--green)" id="mSelesai">0</div>
             <div class="metric-note">Sudah ditindaklanjuti</div>
+          </div>
+        </div>
+
+        <div class="overview-cards">
+          <div class="overview-card">
+            <div class="overview-icon">🍜</div>
+            <div>
+              <div class="overview-label">Total Anomali</div>
+              <div class="overview-value" id="oTotal">0</div>
+            </div>
+          </div>
+          <div class="overview-card">
+            <div class="overview-icon">👨‍👩‍👧</div>
+            <div>
+              <div class="overview-label">Anomali Keluarga</div>
+              <div class="overview-value" id="oKeluarga">0</div>
+            </div>
+          </div>
+          <div class="overview-card">
+            <div class="overview-icon">🏢</div>
+            <div>
+              <div class="overview-label">Anomali Usaha</div>
+              <div class="overview-value" id="oUsaha">0</div>
+            </div>
+          </div>
+          <div class="overview-card">
+            <div class="overview-icon">📅</div>
+            <div>
+              <div class="overview-label">Update Terakhir</div>
+              <div class="overview-value" id="oUpdate">-</div>
+            </div>
           </div>
         </div>
 
@@ -1245,6 +1330,25 @@ function renderDashboard() {
     pct.toLocaleString('id-ID', {minimumFractionDigits:2, maximumFractionDigits:2}) + '%';
   document.getElementById('heroCount').textContent =
     `${done.toLocaleString('id-ID')} dari ${total.toLocaleString('id-ID')} anomali telah selesai`;
+
+  const keluargaCount = records.filter(r => r.jenis === 'Keluarga').length;
+  const usahaCount = records.filter(r => r.jenis === 'Usaha').length;
+  const latestUpdate = records
+    .map(r => r.tanggalUpdate)
+    .filter(Boolean)
+    .map(value => new Date(value))
+    .filter(date => !Number.isNaN(date.getTime()))
+    .sort((a,b) => b - a)[0];
+
+  document.getElementById('oTotal').textContent = total.toLocaleString('id-ID');
+  document.getElementById('oKeluarga').textContent = keluargaCount.toLocaleString('id-ID');
+  document.getElementById('oUsaha').textContent = usahaCount.toLocaleString('id-ID');
+  document.getElementById('oUpdate').textContent = latestUpdate
+    ? new Intl.DateTimeFormat('id-ID', {
+        day:'2-digit', month:'long', year:'numeric',
+        hour:'2-digit', minute:'2-digit'
+      }).format(latestUpdate) + ' WIB'
+    : '-';
 
   renderMatrix();
 }
