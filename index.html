@@ -1114,10 +1114,8 @@
 <div class="toast" id="toast"></div>
 
 <script>
-/*
-  GANTI dengan URL deployment Web App Apps Script.
-  Contoh:
-  const API_URL = 'https://script.google.com/macros/s/AKfycb.../exec';
+
+const API_URL = 'https://script.google.com/macros/s/AKfycbzOnprzvqk0_Qng3ts6u54nKnzT3y0wBqTAM4S0owtBO_UubrDkqXIuejNtuCNKysCXtw/exec';
 
 const MISSING_NIK_OPTIONS = Object.freeze({
   PERBAIKAN: {
@@ -1137,9 +1135,6 @@ const MISSING_NIK_OPTIONS = Object.freeze({
 const MISSING_NIK_VALUES = Object.freeze(
   Object.values(MISSING_NIK_OPTIONS).map(item => item.value)
 );
-*/
-const API_URL = 'https://script.google.com/macros/s/AKfycbzOnprzvqk0_Qng3ts6u54nKnzT3y0wBqTAM4S0owtBO_UubrDkqXIuejNtuCNKysCXtw/exec';
-
 let records = [];
 let anomalyIds = [];
 let activeRecap = 'kecamatan';
@@ -1226,8 +1221,8 @@ async function loadData() {
     finishLoading();
     showToast(`Berhasil memuat ${records.length} anomali.`);
   } catch (error) {
-    console.error(error);
-    setLoadingProgress(35, 'API belum terhubung. Menyiapkan data demo...');
+    console.error('Gagal memuat API MI LIDI:', error);
+    setLoadingProgress(35, 'Gagal memuat API. Menyiapkan data demo...');
     loadDemoData();
     finishLoading();
   }
@@ -1387,7 +1382,7 @@ function renderTable(jenis) {
               </option>
             `
             : `
-              <option value="Perbaikan" ${r.tindakLanjut === MISSING_NIK_OPTIONS.PERBAIKAN.value ? 'selected' : ''}>Perbaikan</option>
+              <option value="Perbaikan" ${r.tindakLanjut === 'Perbaikan' ? 'selected' : ''}>Perbaikan</option>
               <option value="Sesuai Kondisi Lapangan"
                 ${r.tindakLanjut === 'Sesuai Kondisi Lapangan' ? 'selected' : ''}>
                 Sesuai Kondisi Lapangan
