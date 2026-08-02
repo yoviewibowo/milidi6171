@@ -400,6 +400,35 @@
       font-weight:800;
       line-height:1.35;
     }
+    .missing-summary{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:12px;
+      margin:14px 0 18px;
+    }
+    .missing-mini{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:14px;
+      box-shadow:var(--shadow);
+    }
+    .missing-mini .label{
+      color:var(--muted);
+      font-size:9px;
+      margin-bottom:6px;
+    }
+    .missing-mini .value{
+      font-size:20px;
+      font-weight:800;
+      line-height:1.2;
+    }
+    .missing-mini .note{
+      color:var(--muted);
+      font-size:8px;
+      margin-top:5px;
+    }
+
 
 
     .tabs{
@@ -626,10 +655,68 @@
     }
 
     footer{
-      padding:18px;
+      position:relative;
+      padding:58px 18px 18px;
       text-align:center;
       color:var(--muted);
       font-size:10px;
+      overflow:hidden;
+      border-top:1px solid var(--line);
+      background:#fff;
+    }
+    .footer-horse-track{
+      position:absolute;
+      left:0;
+      right:0;
+      top:5px;
+      height:48px;
+      overflow:hidden;
+      pointer-events:none;
+    }
+    .footer-horse{
+      position:absolute;
+      left:-90px;
+      bottom:0;
+      width:72px;
+      height:44px;
+      object-fit:contain;
+      animation:horseWalk 12s linear infinite;
+      will-change:transform;
+    }
+    @keyframes horseWalk{
+      0%{
+        transform:translateX(0) translateY(0) scaleX(1);
+      }
+      12%{
+        transform:translateX(calc(12vw + 15px)) translateY(-2px) scaleX(1);
+      }
+      25%{
+        transform:translateX(calc(25vw + 25px)) translateY(0) scaleX(1);
+      }
+      38%{
+        transform:translateX(calc(38vw + 35px)) translateY(-2px) scaleX(1);
+      }
+      50%{
+        transform:translateX(calc(50vw + 45px)) translateY(0) scaleX(1);
+      }
+      63%{
+        transform:translateX(calc(63vw + 55px)) translateY(-2px) scaleX(1);
+      }
+      75%{
+        transform:translateX(calc(75vw + 65px)) translateY(0) scaleX(1);
+      }
+      88%{
+        transform:translateX(calc(88vw + 75px)) translateY(-2px) scaleX(1);
+      }
+      100%{
+        transform:translateX(calc(100vw + 170px)) translateY(0) scaleX(1);
+      }
+    }
+    @media (prefers-reduced-motion:reduce){
+      .footer-horse{
+        animation:none;
+        left:18px;
+      }
     }
     footer a{
       color:var(--orange);
@@ -658,6 +745,7 @@
       .hero{grid-template-columns:1fr}
       .metrics{grid-template-columns:1fr 1fr}
       .overview-cards{grid-template-columns:repeat(3,1fr)}
+      .missing-summary{grid-template-columns:1fr 1fr}
       .filters{grid-template-columns:1fr 1fr}
     }
     @media(max-width:780px){
@@ -674,7 +762,7 @@
       .content{padding:15px}
     }
     @media(max-width:560px){
-      .metrics,.overview-cards,.filters{grid-template-columns:1fr}
+      .metrics,.overview-cards,.missing-summary,.filters{grid-template-columns:1fr}
       .hero-main{grid-template-columns:1fr}
       .hero-visual{height:130px;margin-top:14px}
       .loading-collab{gap:10px}
@@ -772,7 +860,7 @@
           <div class="metric">
             <div class="metric-label">Total Anomali</div>
             <div class="metric-value" id="mTotal">0</div>
-            <div class="metric-note">Data keluarga, usaha, dan missing NIK</div>
+            <div class="metric-note">Data anomali keluarga dan usaha</div>
           </div>
           <div class="metric">
             <div class="metric-label">Belum</div>
@@ -809,18 +897,34 @@
             </div>
           </div>
           <div class="overview-card">
-            <div class="overview-icon">🪪</div>
-            <div>
-              <div class="overview-label">Missing NIK</div>
-              <div class="overview-value" id="oMissingNik">0</div>
-            </div>
-          </div>
-          <div class="overview-card">
             <div class="overview-icon">📅</div>
             <div>
               <div class="overview-label">Update Terakhir</div>
               <div class="overview-value" id="oUpdate">-</div>
             </div>
+          </div>
+        </div>
+
+        <div class="missing-summary">
+          <div class="missing-mini">
+            <div class="label">Jumlah Missing Value NIK</div>
+            <div class="value" id="nikTotal">0</div>
+            <div class="note">Tidak masuk indikator anomali utama</div>
+          </div>
+          <div class="missing-mini">
+            <div class="label">Perbaikan</div>
+            <div class="value" id="nikPerbaikan">0%</div>
+            <div class="note" id="nikPerbaikanCount">0 dari 0</div>
+          </div>
+          <div class="missing-mini">
+            <div class="label">Menolak</div>
+            <div class="value" id="nikMenolak">0%</div>
+            <div class="note" id="nikMenolakCount">0 dari 0</div>
+          </div>
+          <div class="missing-mini">
+            <div class="label">Tidak Ada Identitas</div>
+            <div class="value" id="nikTidakAdaKartu">0%</div>
+            <div class="note" id="nikTidakAdaKartuCount">0 dari 0</div>
           </div>
         </div>
 
@@ -948,7 +1052,7 @@
         <div class="page-head">
           <div>
             <h2>Anomali Missing NIK</h2>
-            <p>Daftar assignment keluarga dengan NIK kosong atau missing value.</p>
+            <p>Daftar assignment keluarga dengan NIK kosong atau missing value. Data ini tidak masuk indikator anomali utama.</p>
           </div>
           <button class="btn btn-light" onclick="exportCSV('Missing NIK')">Export CSV</button>
         </div>
@@ -998,6 +1102,9 @@
     </section>
 
     <footer>
+      <div class="footer-horse-track" aria-hidden="true">
+        <img class="footer-horse" src="kuda-wortel.jpeg" alt="">
+      </div>
       MI LIDI 6171 by
       <a href="https://www.instagram.com/yovie.wibowo/" target="_blank" rel="noopener noreferrer">yovie.wibowo</a>
     </footer>
@@ -1011,6 +1118,25 @@
   GANTI dengan URL deployment Web App Apps Script.
   Contoh:
   const API_URL = 'https://script.google.com/macros/s/AKfycb.../exec';
+
+const MISSING_NIK_OPTIONS = Object.freeze({
+  PERBAIKAN: {
+    value: 'Perbaikan',
+    label: 'Perbaikan'
+  },
+  MENOLAK: {
+    value: 'Sesuai Kondisi Lapangan, Responden Memang Menolak',
+    label: 'Responden Menolak'
+  },
+  TIDAK_ADA_IDENTITAS: {
+    value: 'Sesuai Kondisi Lapangan, Tidak Ada Kartu Identitas',
+    label: 'Tidak Ada Identitas'
+  }
+});
+
+const MISSING_NIK_VALUES = Object.freeze(
+  Object.values(MISSING_NIK_OPTIONS).map(item => item.value)
+);
 */
 const API_URL = 'https://script.google.com/macros/s/AKfycbzOnprzvqk0_Qng3ts6u54nKnzT3y0wBqTAM4S0owtBO_UubrDkqXIuejNtuCNKysCXtw/exec';
 
@@ -1223,7 +1349,7 @@ function renderTable(jenis) {
 
   tbody.innerHTML = rows.map(r => `
     <tr class="${r.done ? 'completed' : ''}" data-key="${escapeHtml(recordKey(r))}">
-      <td><strong>${escapeHtml(r.namaObjek)}</strong></td>
+      <td><strong>${escapeHtml(jenis === 'Missing NIK' ? String(r.namaObjek || '').toUpperCase() : r.namaObjek)}</strong></td>
       <td>
         <strong>${escapeHtml(r.namaSubsls)}</strong><br>
         <span style="color:var(--muted)">${escapeHtml(r.kelurahan)}</span>
@@ -1245,8 +1371,28 @@ function renderTable(jenis) {
                 onchange="changeField('${escapeJs(recordKey(r))}','tindakLanjut',this.value)"
                 ${r.done ? 'disabled' : ''}>
           <option value="">Pilih...</option>
-          <option ${r.tindakLanjut === 'Perbaikan' ? 'selected' : ''}>Perbaikan</option>
-          <option ${r.tindakLanjut === 'Sesuai Kondisi Lapangan' ? 'selected' : ''}>Sesuai Kondisi Lapangan</option>
+          ${jenis === 'Missing NIK'
+            ? `
+              <option value="${escapeHtml(MISSING_NIK_OPTIONS.PERBAIKAN.value)}"
+                ${r.tindakLanjut === MISSING_NIK_OPTIONS.PERBAIKAN.value ? 'selected' : ''}>
+                ${escapeHtml(MISSING_NIK_OPTIONS.PERBAIKAN.label)}
+              </option>
+              <option value="${escapeHtml(MISSING_NIK_OPTIONS.MENOLAK.value)}"
+                ${r.tindakLanjut === MISSING_NIK_OPTIONS.MENOLAK.value ? 'selected' : ''}>
+                ${escapeHtml(MISSING_NIK_OPTIONS.MENOLAK.label)}
+              </option>
+              <option value="${escapeHtml(MISSING_NIK_OPTIONS.TIDAK_ADA_IDENTITAS.value)}"
+                ${r.tindakLanjut === MISSING_NIK_OPTIONS.TIDAK_ADA_IDENTITAS.value ? 'selected' : ''}>
+                ${escapeHtml(MISSING_NIK_OPTIONS.TIDAK_ADA_IDENTITAS.label)}
+              </option>
+            `
+            : `
+              <option value="Perbaikan" ${r.tindakLanjut === MISSING_NIK_OPTIONS.PERBAIKAN.value ? 'selected' : ''}>Perbaikan</option>
+              <option value="Sesuai Kondisi Lapangan"
+                ${r.tindakLanjut === 'Sesuai Kondisi Lapangan' ? 'selected' : ''}>
+                Sesuai Kondisi Lapangan
+              </option>
+            `}
         </select>
       </td>
       <td>
@@ -1393,8 +1539,11 @@ async function toggleDone(key, checked) {
 }
 
 function renderDashboard() {
-  const total = records.length;
-  const done = records.filter(r => r.done).length;
+  const priorityRecords = records.filter(r => r.jenis !== 'Missing NIK');
+  const missingNikRecords = records.filter(r => r.jenis === 'Missing NIK');
+
+  const total = priorityRecords.length;
+  const done = priorityRecords.filter(r => r.done).length;
   const pct = total ? (done / total * 100) : 0;
 
   document.getElementById('mTotal').textContent = total.toLocaleString('id-ID');
@@ -1405,9 +1554,15 @@ function renderDashboard() {
   document.getElementById('heroCount').textContent =
     `${done.toLocaleString('id-ID')} dari ${total.toLocaleString('id-ID')} anomali telah selesai`;
 
-  const keluargaCount = records.filter(r => r.jenis === 'Keluarga').length;
-  const usahaCount = records.filter(r => r.jenis === 'Usaha').length;
-  const missingNikCount = records.filter(r => r.jenis === 'Missing NIK').length;
+  const keluargaCount = priorityRecords.filter(r => r.jenis === 'Keluarga').length;
+  const usahaCount = priorityRecords.filter(r => r.jenis === 'Usaha').length;
+
+  const missingTotal = missingNikRecords.length;
+  const missingPerbaikan = missingNikRecords.filter(r => r.tindakLanjut === 'Perbaikan').length;
+  const missingMenolak = missingNikRecords.filter(r => r.tindakLanjut === MISSING_NIK_OPTIONS.MENOLAK.value).length;
+  const missingTidakAdaKartu = missingNikRecords.filter(r => r.tindakLanjut === MISSING_NIK_OPTIONS.TIDAK_ADA_IDENTITAS.value).length;
+
+  const pctMissing = count => missingTotal ? count / missingTotal * 100 : 0;
   const latestUpdate = records
     .map(r => r.tanggalUpdate)
     .filter(Boolean)
@@ -1418,7 +1573,6 @@ function renderDashboard() {
   document.getElementById('oTotal').textContent = total.toLocaleString('id-ID');
   document.getElementById('oKeluarga').textContent = keluargaCount.toLocaleString('id-ID');
   document.getElementById('oUsaha').textContent = usahaCount.toLocaleString('id-ID');
-  document.getElementById('oMissingNik').textContent = missingNikCount.toLocaleString('id-ID');
   document.getElementById('oUpdate').textContent = latestUpdate
     ? new Intl.DateTimeFormat('id-ID', {
         day:'2-digit', month:'long', year:'numeric',
@@ -1426,13 +1580,30 @@ function renderDashboard() {
       }).format(latestUpdate) + ' WIB'
     : '-';
 
+  document.getElementById('nikTotal').textContent = missingTotal.toLocaleString('id-ID');
+  document.getElementById('nikPerbaikan').textContent =
+    pctMissing(missingPerbaikan).toLocaleString('id-ID', {maximumFractionDigits:1}) + '%';
+  document.getElementById('nikMenolak').textContent =
+    pctMissing(missingMenolak).toLocaleString('id-ID', {maximumFractionDigits:1}) + '%';
+  document.getElementById('nikTidakAdaKartu').textContent =
+    pctMissing(missingTidakAdaKartu).toLocaleString('id-ID', {maximumFractionDigits:1}) + '%';
+
+  document.getElementById('nikPerbaikanCount').textContent =
+    `${missingPerbaikan.toLocaleString('id-ID')} dari ${missingTotal.toLocaleString('id-ID')}`;
+  document.getElementById('nikMenolakCount').textContent =
+    `${missingMenolak.toLocaleString('id-ID')} dari ${missingTotal.toLocaleString('id-ID')}`;
+  document.getElementById('nikTidakAdaKartuCount').textContent =
+    `${missingTidakAdaKartu.toLocaleString('id-ID')} dari ${missingTotal.toLocaleString('id-ID')}`;
+
   renderMatrix();
 }
 
 function groupRows(field) {
   const map = new Map();
 
-  records.forEach(record => {
+  records
+    .filter(record => record.jenis !== 'Missing NIK')
+    .forEach(record => {
     const label = record[field] || '(Kosong)';
     const sortCode = field === 'kecamatan'
       ? String(record.kdkec || '999').padStart(3,'0')
@@ -1462,7 +1633,12 @@ function renderMatrix() {
   const rows = groupRows(activeRecap);
   const ids = anomalyIds.length
     ? anomalyIds
-    : [...new Set(records.map(r => r.idAnomali).filter(Boolean))].sort();
+    : [...new Set(
+        records
+          .filter(r => r.jenis !== 'Missing NIK')
+          .map(r => r.idAnomali)
+          .filter(Boolean)
+      )].sort();
 
   const header = `
     <thead>
@@ -1519,7 +1695,12 @@ function buildMatrixCell(items) {
 }
 
 function refreshAll() {
-  anomalyIds = [...new Set(records.map(r => r.idAnomali).filter(Boolean))]
+  anomalyIds = [...new Set(
+    records
+      .filter(r => r.jenis !== 'Missing NIK')
+      .map(r => r.idAnomali)
+      .filter(Boolean)
+  )]
     .sort((a,b) => a.localeCompare(b,'id',{numeric:true}));
 
   rebuildFilterOptions();
