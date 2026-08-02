@@ -366,7 +366,7 @@
     .metric-note{font-size:9px;color:var(--muted)}
     .overview-cards{
       display:grid;
-      grid-template-columns:repeat(4,1fr);
+      grid-template-columns:repeat(5,1fr);
       gap:14px;
       margin-bottom:18px;
     }
@@ -657,7 +657,7 @@
     @media(max-width:1050px){
       .hero{grid-template-columns:1fr}
       .metrics{grid-template-columns:1fr 1fr}
-      .overview-cards{grid-template-columns:1fr 1fr}
+      .overview-cards{grid-template-columns:repeat(3,1fr)}
       .filters{grid-template-columns:1fr 1fr}
     }
     @media(max-width:780px){
@@ -717,6 +717,7 @@
     <button class="nav-item active" data-page="dashboard">🍜 Dashboard</button>
     <button class="nav-item" data-page="keluarga">👨‍👩‍👧 Anomali Keluarga</button>
     <button class="nav-item" data-page="usaha">🏢 Anomali Usaha</button>
+    <button class="nav-item" data-page="missingnik">🪪 Missing NIK</button>
 
     <div class="sidebar-note">
       Filter berdasarkan <strong>Status → PJ Kuda → PJ Anomali</strong>, buka FASIH, lakukan perbaikan, isi tindak lanjut, lalu centang selesai.
@@ -771,7 +772,7 @@
           <div class="metric">
             <div class="metric-label">Total Anomali</div>
             <div class="metric-value" id="mTotal">0</div>
-            <div class="metric-note">Data keluarga dan usaha</div>
+            <div class="metric-note">Data keluarga, usaha, dan missing NIK</div>
           </div>
           <div class="metric">
             <div class="metric-label">Belum</div>
@@ -805,6 +806,13 @@
             <div>
               <div class="overview-label">Anomali Usaha</div>
               <div class="overview-value" id="oUsaha">0</div>
+            </div>
+          </div>
+          <div class="overview-card">
+            <div class="overview-icon">🪪</div>
+            <div>
+              <div class="overview-label">Missing NIK</div>
+              <div class="overview-value" id="oMissingNik">0</div>
             </div>
           </div>
           <div class="overview-card">
@@ -936,6 +944,57 @@
         </div>
       </div>
 
+      <div class="page" id="missingnik">
+        <div class="page-head">
+          <div>
+            <h2>Anomali Missing NIK</h2>
+            <p>Daftar assignment keluarga dengan NIK kosong atau missing value.</p>
+          </div>
+          <button class="btn btn-light" onclick="exportCSV('Missing NIK')">Export CSV</button>
+        </div>
+
+        <div class="card">
+          <div class="info">
+            Filter tersedia berdasarkan <strong>Status → PJ Kuda → PJ Anomali</strong>. Klik judul kolom untuk mengurutkan A–Z; data selesai selalu ditempatkan paling bawah.
+          </div>
+
+          <div class="filters">
+            <input class="control" id="nikSearch" placeholder="Cari nama prelist / wilayah">
+            <select class="control" id="nikStatus">
+              <option value="">Semua Status</option>
+              <option value="Belum">Belum</option>
+              <option value="Selesai">Selesai</option>
+            </select>
+            <select class="control" id="nikKuda"><option value="">Semua PJ Kuda</option></select>
+            <select class="control" id="nikAnomali"><option value="">Semua PJ Anomali</option></select>
+            <button class="btn btn-orange" onclick="renderTable('Missing NIK')">Cari</button>
+          </div>
+
+          <div class="table-wrap">
+            <table class="data">
+              <thead>
+                <tr>
+                  <th class="sortable" onclick="sortTable('Missing NIK','namaObjek')">Nama Prelist<span class="sort-indicator" data-indicator="Missing NIK-namaObjek"></span></th>
+                  <th class="sortable" onclick="sortTable('Missing NIK','namaSubsls')">Wilayah<span class="sort-indicator" data-indicator="Missing NIK-namaSubsls"></span></th>
+                  <th class="sortable" onclick="sortTable('Missing NIK','idAnomali')">Anomali<span class="sort-indicator" data-indicator="Missing NIK-idAnomali"></span></th>
+                  <th class="sortable" onclick="sortTable('Missing NIK','ppl')">PPL<span class="sort-indicator" data-indicator="Missing NIK-ppl"></span></th>
+                  <th class="sortable" onclick="sortTable('Missing NIK','pml')">PML<span class="sort-indicator" data-indicator="Missing NIK-pml"></span></th>
+                  <th class="sortable" onclick="sortTable('Missing NIK','pjKuda')">PJ Kuda<span class="sort-indicator" data-indicator="Missing NIK-pjKuda"></span></th>
+                  <th class="sortable" onclick="sortTable('Missing NIK','pjAnomali')">PJ Anomali<span class="sort-indicator" data-indicator="Missing NIK-pjAnomali"></span></th>
+                  <th class="sortable" onclick="sortTable('Missing NIK','tanggalUpdate')">Tanggal Update<span class="sort-indicator" data-indicator="Missing NIK-tanggalUpdate"></span></th>
+                  <th>FASIH</th>
+                  <th>Tindak Lanjut</th>
+                  <th>Catatan</th>
+                  <th class="sortable" onclick="sortTable('Missing NIK','done')">Selesai?<span class="sort-indicator" data-indicator="Missing NIK-done"></span></th>
+                  <th class="sortable" onclick="sortTable('Missing NIK','tanggalSelesai')">Tanggal Penyelesaian<span class="sort-indicator" data-indicator="Missing NIK-tanggalSelesai"></span></th>
+                </tr>
+              </thead>
+              <tbody id="nikTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
     </section>
 
     <footer>
@@ -961,7 +1020,8 @@ let activeRecap = 'kecamatan';
 let saveTimers = {};
 let tableSort = {
   Keluarga: {field:'namaObjek', direction:'asc'},
-  Usaha: {field:'namaObjek', direction:'asc'}
+  Usaha: {field:'namaObjek', direction:'asc'},
+  'Missing NIK': {field:'namaObjek', direction:'asc'}
 };
 
 function setLoadingProgress(percent, text) {
@@ -1054,7 +1114,8 @@ function loadDemoData() {
     {sheet:'Mikro Anomali Keluarga',row:4,jenis:'Keluarga',assignmentId:'617103-K009',idSubsls:'6171030008000300',kdkec:'03',kecamatan:'Pontianak Barat',kelurahan:'Sungai Beliung',namaSubsls:'RT 003 RW 001',namaObjek:'Keluarga Kamaliah',anomali:'Pengeluaran lebih besar dari pendapatan',idAnomali:'Ano.Sosek.5',pml:'Andri Kurniawan',pjKuda:'Yovie',pjAnomali:'Andri',tindakLanjut:'',catatan:'',done:false,linkFasih:'#',tanggalUpdate:'2026-07-26T00:00:00+07:00',tanggalSelesai:''},
     {sheet:'Mikro Anomali Usaha',row:2,jenis:'Usaha',assignmentId:'617103-U001',idSubsls:'6171030008000300',kdkec:'03',kecamatan:'Pontianak Barat',kelurahan:'Sungai Beliung',namaSubsls:'RT 003 RW 001',namaObjek:'Toko Sinar Jaya',anomali:'Selisih pendapatan dan pengeluaran',idAnomali:'Ano.Sosek.5',pml:'Andri Kurniawan',pjKuda:'Yovie',pjAnomali:'Andri',tindakLanjut:'',catatan:'',done:false,linkFasih:'#',tanggalUpdate:'2026-07-26T00:00:00+07:00',tanggalSelesai:''},
     {sheet:'Mikro Anomali Usaha',row:3,jenis:'Usaha',assignmentId:'617104-U022',idSubsls:'6171040012000400',kdkec:'04',kecamatan:'Pontianak Timur',kelurahan:'Saigon',namaSubsls:'RT 004 RW 002',namaObjek:'CV Borneo Makmur',anomali:'Input bahan baku tidak logis',idAnomali:'Ano.Sosek.6',pml:'Andri Kurniawan',pjKuda:'Dedi',pjAnomali:'Andri',tindakLanjut:'Perbaikan',catatan:'Nilai bahan baku telah diperbaiki.',done:true,linkFasih:'#',tanggalUpdate:'2026-07-25T00:00:00+07:00',tanggalSelesai:'2026-07-26T13:42:00+07:00'},
-    {sheet:'Mikro Anomali Usaha',row:4,jenis:'Usaha',assignmentId:'617105-U009',idSubsls:'6171050003000100',kdkec:'05',kecamatan:'Pontianak Utara',kelurahan:'Siantan Tengah',namaSubsls:'RT 001 RW 004',namaObjek:'Warung Kopi Tokaya',anomali:'Selisih nilai produksi',idAnomali:'Ano.Sosek.5',pml:'Rina',pjKuda:'Yovie',pjAnomali:'Rama',tindakLanjut:'Sesuai Kondisi Lapangan',catatan:'Sudah dikonfirmasi.',done:true,linkFasih:'#',tanggalUpdate:'2026-07-24T00:00:00+07:00',tanggalSelesai:'2026-07-25T15:05:00+07:00'}
+    {sheet:'Mikro Anomali Usaha',row:4,jenis:'Usaha',assignmentId:'617105-U009',idSubsls:'6171050003000100',kdkec:'05',kecamatan:'Pontianak Utara',kelurahan:'Siantan Tengah',namaSubsls:'RT 001 RW 004',namaObjek:'Warung Kopi Tokaya',anomali:'Selisih nilai produksi',idAnomali:'Ano.Sosek.5',ppl:'Agus',pml:'Rina',pjKuda:'Yovie',pjAnomali:'Rama',tindakLanjut:'Sesuai Kondisi Lapangan',catatan:'Sudah dikonfirmasi.',done:true,linkFasih:'#',tanggalUpdate:'2026-07-24T00:00:00+07:00',tanggalSelesai:'2026-07-25T15:05:00+07:00'},
+    {sheet:'Mikro Missing NIK',row:2,jenis:'Missing NIK',assignmentId:'617103-NIK001',idSubsls:'6171030008000300',kdkec:'03',kecamatan:'Pontianak Barat',kelurahan:'Sungai Beliung',namaSubsls:'RT 003 RW 001',namaObjek:'Keluarga Ahmad',anomali:'NIK kosong (missing value)',idAnomali:'Missing NIK',ppl:'Kamaliah',pml:'Andri Kurniawan',pjKuda:'Yovie',pjAnomali:'Andri',tindakLanjut:'',catatan:'',done:false,linkFasih:'#',tanggalUpdate:'2026-08-02T00:00:00+07:00',tanggalSelesai:''}
   ];
   anomalyIds = [...new Set(records.map(r => r.idAnomali))].sort();
   refreshAll();
@@ -1073,7 +1134,8 @@ function uniqueSorted(field, jenis) {
 function rebuildFilterOptions() {
   const configs = [
     ['kel','Keluarga'],
-    ['usaha','Usaha']
+    ['usaha','Usaha'],
+    ['nik','Missing NIK']
   ];
 
   configs.forEach(([prefix, jenis]) => {
@@ -1091,8 +1153,20 @@ function rebuildFilterOptions() {
   });
 }
 
+function prefixForJenis(jenis) {
+  if (jenis === 'Keluarga') return 'kel';
+  if (jenis === 'Usaha') return 'usaha';
+  return 'nik';
+}
+
+function tableBodyForJenis(jenis) {
+  if (jenis === 'Keluarga') return 'kelTable';
+  if (jenis === 'Usaha') return 'usahaTable';
+  return 'nikTable';
+}
+
 function getFilters(jenis) {
-  const prefix = jenis === 'Keluarga' ? 'kel' : 'usaha';
+  const prefix = prefixForJenis(jenis);
   return {
     q: document.getElementById(prefix + 'Search').value.trim().toLowerCase(),
     status: document.getElementById(prefix + 'Status').value,
@@ -1103,7 +1177,7 @@ function getFilters(jenis) {
 
 function renderTable(jenis) {
   const f = getFilters(jenis);
-  const tbody = document.getElementById(jenis === 'Keluarga' ? 'kelTable' : 'usahaTable');
+  const tbody = document.getElementById(tableBodyForJenis(jenis));
   const sort = tableSort[jenis];
 
   const rows = records
@@ -1333,6 +1407,7 @@ function renderDashboard() {
 
   const keluargaCount = records.filter(r => r.jenis === 'Keluarga').length;
   const usahaCount = records.filter(r => r.jenis === 'Usaha').length;
+  const missingNikCount = records.filter(r => r.jenis === 'Missing NIK').length;
   const latestUpdate = records
     .map(r => r.tanggalUpdate)
     .filter(Boolean)
@@ -1343,6 +1418,7 @@ function renderDashboard() {
   document.getElementById('oTotal').textContent = total.toLocaleString('id-ID');
   document.getElementById('oKeluarga').textContent = keluargaCount.toLocaleString('id-ID');
   document.getElementById('oUsaha').textContent = usahaCount.toLocaleString('id-ID');
+  document.getElementById('oMissingNik').textContent = missingNikCount.toLocaleString('id-ID');
   document.getElementById('oUpdate').textContent = latestUpdate
     ? new Intl.DateTimeFormat('id-ID', {
         day:'2-digit', month:'long', year:'numeric',
@@ -1449,6 +1525,7 @@ function refreshAll() {
   rebuildFilterOptions();
   renderTable('Keluarga');
   renderTable('Usaha');
+  renderTable('Missing NIK');
   renderDashboard();
 }
 
@@ -1463,7 +1540,8 @@ function switchPage(id) {
   document.getElementById('crumb').textContent = {
     dashboard:'Dashboard',
     keluarga:'Anomali Keluarga',
-    usaha:'Anomali Usaha'
+    usaha:'Anomali Usaha',
+    missingnik:'Anomali Missing NIK'
   }[id];
 
   document.getElementById('sidebar').classList.remove('open');
@@ -1473,13 +1551,13 @@ function exportCSV(jenis) {
   const rows = records.filter(r => r.jenis === jenis);
   const headers = [
     'Jenis','Assignment ID','ID SubSLS','Kecamatan','Kelurahan','Nama SubSLS',
-    'Nama Objek','Anomali','ID Anomali','PML','PJ Kuda','PJ Anomali',
+    'Nama Objek','Anomali','ID Anomali','PPL','PML','PJ Kuda','PJ Anomali',
     'Tanggal Update','Tindak Lanjut','Catatan','Done','Tanggal Penyelesaian'
   ];
 
   const values = rows.map(r => [
     r.jenis,r.assignmentId,r.idSubsls,r.kecamatan,r.kelurahan,r.namaSubsls,
-    r.namaObjek,r.anomali,r.idAnomali,r.pml,r.pjKuda,r.pjAnomali,
+    r.namaObjek,r.anomali,r.idAnomali,r.ppl,r.pml,r.pjKuda,r.pjAnomali,
     r.tanggalUpdate,r.tindakLanjut,r.catatan,r.done,r.tanggalSelesai
   ]);
 
@@ -1521,7 +1599,11 @@ document.getElementById('mobileMenu').addEventListener('click', () => {
   ['usahaSearch','input','Usaha'],
   ['usahaStatus','change','Usaha'],
   ['usahaKuda','change','Usaha'],
-  ['usahaAnomali','change','Usaha']
+  ['usahaAnomali','change','Usaha'],
+  ['nikSearch','input','Missing NIK'],
+  ['nikStatus','change','Missing NIK'],
+  ['nikKuda','change','Missing NIK'],
+  ['nikAnomali','change','Missing NIK']
 ].forEach(([id,eventName,jenis]) => {
   document.getElementById(id).addEventListener(eventName, () => renderTable(jenis));
 });
